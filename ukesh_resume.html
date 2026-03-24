@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UKESH KUMAR R — AI Engineer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050709;
+      --surface: #0c0f14;
+      --card: #111520;
+      --border: #1e2a3a;
+      --accent: #00f0ff;
+      --accent2: #7b2fff;
+      --accent3: #ff2f7b;
+      --text: #cdd6f4;
+      --muted: #6b7a99;
+      --glow: 0 0 20px rgba(0,240,255,0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+      box-shadow: 0 0 15px var(--accent);
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(0,240,255,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,240,255,0.012) 2px,
+        rgba(0,240,255,0.012) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Grid background */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image:
+        linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 80px 60px 60px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .header-left { flex: 1; min-width: 280px; }
+
+    .status-bar {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: blink 1.5s infinite;
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -1px;
+      color: #fff;
+      text-shadow: 0 0 40px rgba(0,240,255,0.4);
+    }
+
+    h1 span {
+      display: block;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title-tag {
+      margin-top: 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .title-tag strong {
+      color: var(--accent3);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .header-right {
+      text-align: right;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 2;
+    }
+
+    .header-right a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .header-right a:hover { color: #fff; }
+
+    /* ===== MAIN LAYOUT ===== */
+    main {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+    }
+
+    /* ===== SECTION BASE ===== */
+    .section {
+      padding: 50px 50px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      animation: fadeUp 0.6s ease forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .section:last-child { border-right: none; }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section:nth-child(1) { animation-delay: 0.1s; }
+    .section:nth-child(2) { animation-delay: 0.2s; }
+    .section:nth-child(3) { animation-delay: 0.3s; }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0.4;
+    }
+
+    /* ===== ABOUT ===== */
+    .about-text {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text);
+      font-weight: 300;
+    }
+
+    .about-text em {
+      color: var(--accent);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* ===== SKILLS ===== */
+    .skills-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .skill-item {
+      position: relative;
+    }
+
+    .skill-name {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .skill-name span { color: var(--accent); }
+
+    .skill-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      animation: fillBar 1.5s ease forwards;
+      width: 0;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    @keyframes fillBar {
+      to { width: var(--w); }
+    }
+
+    .skill-dots {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      border: 1px solid var(--muted);
+    }
+
+    .dot.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    /* ===== EDUCATION ===== */
+    .edu-card {
+      position: relative;
+      padding: 24px;
+      background: rgba(0,240,255,0.03);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .edu-card:hover {
+      background: rgba(0,240,255,0.07);
+      border-left-color: var(--accent2);
+      transform: translateX(4px);
+    }
+
+    .edu-degree {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .edu-school {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .edu-meta {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    /* ===== BOTTOM BAR ===== */
+    footer {
+      position: relative;
+      z-index: 10;
+      padding: 24px 60px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-left {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+
+    .footer-left span { color: var(--accent3); }
+
+    .contact-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--accent);
+      border: none;
+      padding: 12px 28px;
+      cursor: pointer;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .contact-btn:hover {
+      background: var(--accent2);
+      box-shadow: 0 0 20px var(--accent2);
+    }
+
+    /* ===== DECORATIVE ===== */
+    .corner-decor {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--accent);
+      border-style: solid;
+      opacity: 0.5;
+    }
+    .corner-tl { top: 20px; left: 20px; border-width: 1px 0 0 1px; }
+    .corner-tr { top: 20px; right: 20px; border-width: 1px 1px 0 0; }
+    .corner-bl { bottom: 20px; left: 20px; border-width: 0 0 1px 1px; }
+    .corner-br { bottom: 20px; right: 20px; border-width: 0 1px 1px 0; }
+
+    .hex-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(123,47,255,0.15);
+      border: 1px solid rgba(123,47,255,0.3);
+      padding: 6px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--accent2);
+      margin-top: 16px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      .section { border-right: none; }
+      header { padding: 50px 30px 40px; }
+      footer { padding: 20px 30px; }
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 40px 20px 30px; }
+      .section { padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <header>
+    <div class="corner-decor corner-tl"></div>
+    <div class="corner-decor corner-tr"></div>
+
+    <div class="header-left">
+      <div class="status-bar">
+        <span class="status-dot"></span>
+        AVAILABLE FOR OPPORTUNITIES
+      </div>
+      <h1>
+        UKESH
+        <span>KUMAR R</span>
+      </h1>
+      <p class="title-tag">// <strong>AI ENGINEER</strong> &nbsp;·&nbsp; TAMIL NADU, IN</p>
+      <div class="hex-badge">
+        ⬡ RMKCET · B.E COMPUTER SCIENCE
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div>📧 <a href="mailto:24226.cs@rmkcet.ac.in">24226.cs@rmkcet.ac.in</a></div>
+      <div style="margin-top:6px; color: var(--muted);">// PORTFOLIO v1.0</div>
+      <div style="color: var(--muted);">// 2024 — PRESENT</div>
+    </div>
+
+    <div class="corner-decor corner-br"></div>
+  </header>
+
+  <main>
+
+    <!-- ABOUT -->
+    <div class="section">
+      <div class="section-label">01 // About</div>
+      <p class="about-text">
+        An <em>AI Engineer</em> with a passion for building intelligent systems. 
+        Crafted with curiosity, powered by <em>Python</em>, and driven by the desire 
+        to push boundaries in artificial intelligence. 
+        The kind of mind that builds personal AI assistants before breakfast. 🤖
+      </p>
+      <div style="margin-top: 30px; font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); line-height: 2;">
+        <div>[ LOCATION ] &nbsp; Ponneri, Tamil Nadu</div>
+        <div>[ DEGREE ] &nbsp;&nbsp;&nbsp; B.E — Computer Science</div>
+        <div>[ STATUS ] &nbsp;&nbsp;&nbsp; <span style="color: var(--accent);">Active & Building</span></div>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="section">
+      <div class="section-label">02 // Skills</div>
+      <div class="skills-grid">
+
+        <div class="skill-item">
+          <div class="skill-name">Python <span>95%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 95%"></div></div>
+          <div class="skill-dots">
+            <div class="dot active"></div><div class="dot active"></div>
+            <div class="dot active"></div><div class="dot active"></div>
+            <div class="dot active"></div>
+          </div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-name">AI / ML <span>80%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 80%"></div></div>
+          <div class="skill-dots">
+            <div class="dot active"></div><div class="dot active"></div>
+            <div class="dot active"></div><div class="dot active"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-name">Ollama / LLMs <span>75%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 75%"></div></div>
+          <div class="skill-dots">
+            <div class="dot active"></div><div class="dot active"></div>
+            <div class="dot active"></div><div class="dot active"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+
+        <div class="skill-item">
+          <div class="skill-name">Problem Solving <span>90%</span></div>
+          <div class="skill-bar"><div class="skill-fill" style="--w: 90%"></div></div>
+          <div class="skill-dots">
+            <div class="dot active"></div><div class="dot active"></div>
+            <div class="dot active"></div><div class="dot active"></div>
+            <div class="dot active"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="section" style="border-right: none;">
+      <div class="section-label">03 // Education</div>
+
+      <div class="edu-card">
+        <div class="edu-degree">B.E — Computer Science</div>
+        <div class="edu-school">RMKCET</div>
+        <div class="edu-meta">// 2024 — PRESENT · TAMIL NADU</div>
+      </div>
+
+      <div style="margin-top: 30px; padding: 20px; border: 1px dashed var(--border); font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); line-height: 2.2;">
+        <div style="color: var(--accent); margin-bottom: 8px;">// CURRENT FOCUS</div>
+        <div>▸ Artificial Intelligence</div>
+        <div>▸ Machine Learning</div>
+        <div>▸ Local LLM Deployment</div>
+        <div>▸ Python Development</div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="corner-decor corner-bl"></div>
+    <div class="footer-left">
+      UKESH KUMAR R &nbsp;·&nbsp; <span>AI ENGINEER</span> &nbsp;·&nbsp; © 2024
+    </div>
+    <a href="mailto:24226.cs@rmkcet.ac.in" class="contact-btn">
+      CONTACT ME →
+    </a>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(2)';
+        ring.style.transform = 'translate(-50%, -50%) scale(1.5)';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        ring.style.transform = 'translate(-50%, -50%) scale(1)';
+      });
+    });
+  </script>
+
+</body>
+</html>
